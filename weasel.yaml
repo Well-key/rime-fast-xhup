@@ -139,6 +139,67 @@ preset_color_schemes:
     # nextpage_color: 0x000000               # 下一页
     # prevpage_color: 0x000000               # 上一页
 
+  mint_light_blue:
+    name: "蓝水鸭／Mint Light Blue"
+    author: Mintimate <"Mintimate's Blog">
+    # 拼音串
+    text_color: 0x6495ed 
+    # 背景
+    back_color: 0xefefef 
+    # 预选栏编号颜色
+    label_color: 0xcac9c8 
+    # 边框
+    border_color: 0xefefef 
+    shadow_color: 0xb4000000
+    # 注解文字
+    comment_text_color: 0xcac9c8 
+    # 非第一候选项
+    candidate_text_color: 0x424242 
+    # 拼音串高亮
+    hilited_text_color: 0xed9564 
+    # 拼音串高亮背景
+    hilited_back_color: 0xefefef 
+    # 第一候选项背景
+    hilited_candidate_back_color: 0xed9564 
+    # 第一候选项
+    hilited_candidate_text_color: 0xefefef
+    # 第一候选项编号颜色
+    hilited_label_color: 0xcac9c8
+    # 注解文字高亮
+    hilited_comment_text_color: 0xefefef 
+    
+
+  mint_dark_blue:
+    name: "黑水鸭／Mint Dark Blue"
+    author: Mintimate <"Mintimate's Blog">
+    # 拼音串
+    text_color: 0x6495ed 
+    # 背景
+    back_color: 0x424242 
+    # 预选栏编号颜色
+    label_color: 0xefefef 
+    # 边框
+    border_color: 0x424242 
+    shadow_color: 0xb4000000
+    # 注解文字
+    comment_text_color: 0xefefef 
+    # 非第一候选项
+    candidate_text_color: 0xefefef
+    # 拼音串高亮
+    hilited_text_color: 0xc6c01a 
+    # 拼音串高亮背景
+    hilited_back_color: 0x424242
+    # 第一候选项背景 
+    hilited_candidate_back_color: 0xc6c01a 
+    # 第一候选项
+    hilited_candidate_text_color: 0xefefef
+    # 第一候选项编号颜色
+    hilited_label_color: 0xffffff
+    # 注解文字高亮
+    hilited_comment_text_color: 0xffffff 
+
+  # 以下为 weasel 自带的配色方案
+  # source: <https://github.com/rime/weasel/blob/master/output/data/weasel.yaml>
   aqua:
     name: 碧水／Aqua
     author: 佛振 <chen.sst@gmail.com>
