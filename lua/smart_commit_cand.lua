@@ -1,10 +1,9 @@
 local rime_api_helper = require("tools/rime_api_helper")
--- local logger = require('tools/logger')
 
 local P = {}
--- local kReject = 0
-local kAccepted = 1
 local kNoop = 2
+local kReject = 0
+local kAccepted = 1
 
 local function reset_state(env)
 	env.prev_input_code = nil
@@ -44,18 +43,18 @@ function P.func(key_event, env)
 	if composition:empty() then return kNoop end
 
 	local segment = composition:back()
+    if segment:has_tag("url") then return kNoop end
+    if segment:has_tag("calculator") then return kNoop end
+    if segment:has_tag("chinese_number") then return kNoop end
+
 	local menu = segment.menu
 	local page_size = env.engine.schema.page_size or 7
 
 	if key_event:repr() == "apostrophe" then
-		if menu:candidate_count() < 3 then
+		if (input_code:match('^[^~]'))
+            and segment:has_tag("radical_lookup")
+        then
 			env.engine:process_key(KeyEvent("'"))
-			return kAccepted
-		end
-
-		local selected_index = segment.selected_index
-		if selected_index >= page_size then
-			env.engine:process_key(KeyEvent("3"))
 			return kAccepted
 		end
 
@@ -77,7 +76,6 @@ function P.func(key_event, env)
 			local _cand_text = selected_cand.text .. "。"
 			local cand_text = rime_api_helper.insert_space_to_candText(env, _cand_text)
 			rime_api_helper.reset_commited_cand_state(env)
-			context:set_property("prev_commit_is_period", "1")
 			env.engine:commit_text(cand_text)
 			reset_state(env)
 			context:clear()
