@@ -7,7 +7,8 @@ function M.detect_os()
 	elseif user_distribute_name:lower():match("squirrel") then
 		return "MacOS"
 	elseif
-		user_distribute_name:lower():match("fcitx%-rime") and io.popen("uname -s"):read("*l"):lower():match("darwin")
+		user_distribute_name:lower():match("fcitx%-rime")
+        and io.popen("uname -s"):read("*l"):lower():match("darwin")
 	then
 		return "MacOS"
 	elseif user_distribute_name:lower():match("^fcitx%-rime$") then
@@ -63,17 +64,23 @@ function M.reset_commited_cand_state(env)
 	local context = env.engine.context
 	context:set_property("prev_cand_is_null", "0")
 	context:set_property("prev_cand_is_word", "0")
+    context:set_property("prev_cand_is_symbol", "0")
 	context:set_property("prev_cand_is_chinese", "0")
 	context:set_property("prev_cand_is_preedit", "0")
 	-- context:set_property("prev_commit_is_comma", "0")
 	-- context:set_property("prev_commit_is_period", "0")
-	-- context:set_property("prev_commit_is_symbol", "0")
 end
 
 function M.set_commited_cand_is_chinese(env)
 	local context = env.engine.context
 	M.reset_commited_cand_state(env)
 	context:set_property("prev_cand_is_chinese", "1")
+end
+
+function M.set_commited_cand_is_pairSymbol(env)
+	local context = env.engine.context
+	M.reset_commited_cand_state(env)
+	context:set_property("prev_cand_is_symbol", "1")
 end
 
 return M
