@@ -13,7 +13,7 @@ custom_phrase.txt
 # installation.yaml
 # default.yaml
 default.custom.yaml
-flypy_xhfast.custom.yaml
+# flypy_xhfast.custom.yaml
 # weasel.yaml
 weasel.custom.yaml
 lua/cold_word_records/*
