@@ -1,5 +1,5 @@
+require("tools/rime_helper")
 local reload_env = require("tools/env_api")
-local rime_api_helper = require("tools/rime_api_helper")
 
 local P = {}
 local T = {}
@@ -7,7 +7,7 @@ local F = {}
 local pin_word = {}
 
 local function get_record_filename()
-	local system_name = rime_api_helper.detect_os()
+	local system_name = detect_os()
 	local user_data_dir = rime_api:get_user_data_dir()
 	if system_name:lower():match("windows") then
 		return string.format("%s\\lua\\pin_word_record.lua", user_data_dir)
@@ -24,9 +24,7 @@ local function write_word_to_file(env)
 	local filename = get_record_filename()
 	local record_header = string.format("local pin_word_records =\n")
 	local record_tailer = string.format("\nreturn pin_word_records")
-	if not filename then
-		return false
-	end
+	if not filename then return false end
 
 	local fd = assert(io.open(filename, "w")) --打开
 	fd:setvbuf("line")
@@ -42,15 +40,16 @@ function pin_word.init(env)
 	reload_env(env)
 	local config = env.engine.schema.config
 	local schema_id = config:get_string("translator/dictionary")
-	local _ok, pin_word_records = pcall(require, "pin_word_record")
-	env.pin_word_records = _ok and pin_word_records or {}
+	local ok, pin_word_records = pcall(require, "pin_word_record")
+    local schema = Schema(schema_id)
 	env.reversedb = ReverseLookup(schema_id)
+	env.pin_word_records = ok and pin_word_records or {}
 	env.word_quality = env:Config_get("pin_word/word_quality") or 999
 	env.pin_mark = env:Config_get("pin_word/comment_mark") or " 🔝"
 	env.comment_mark = env:Config_get("custom_phrase/comment_mark") or " 📌"
 	env.pin_cand_key = env:Config_get("key_binder/pin_cand") or "Control+t"
 	env.unpin_cand_key = env:Config_get("key_binder/unpin_cand") or "Control+t"
-	env.custom_phrase_tran = Component.Translator(env.engine, "", "table_translator@custom_phrase")
+	env.custom_phrase_tran = Component.Translator(env.engine, schema, "", "table_translator@custom_phrase")
 end
 
 function P.func(key, env)
@@ -101,9 +100,7 @@ function P.func(key, env)
 			write_word_to_file(env)
 		end
 
-		if key_accepted then
-			return 1
-		end
+		if key_accepted then return 1 end
 	end
 
 	return 2 -- kNoop, 不做任何操作, 交给下个组件处理
@@ -120,7 +117,7 @@ function T.func(input, seg, env)
 			if
 				w:match("[%a%d%p]")
 				or (string.utf8_len(input_code) / string.utf8_len(w) ~= 2)
-				or (reversedb:lookup(w):gsub("%[%l%l", "") ~= input_code)
+				or (not reversedb:lookup(w):gsub("%[%l%l", ""):match(input_code))
 			then
 				-- 只对非完整编码的字词或不在码表里的字进行置顶, 否则会导致造词失效
 				local cand = Candidate("pin_word", seg.start, seg._end, w, comment_text)
@@ -132,9 +129,7 @@ function T.func(input, seg, env)
 
 	-- 自定义短语的置顶字词加类型标记
 	env.custom_tran = env.custom_phrase_tran:query(input, seg)
-	if not env.custom_tran then
-		return
-	end
+	if not env.custom_tran then return end
 	for cand in env.custom_tran:iter() do
 		cand.type = "custom_phrase_" .. cand.type
 		yield(cand)
@@ -171,9 +166,7 @@ function F.func(input, env)
 			table.insert(other_cands, cand)
 		end
 
-		if #other_cands >= 150 then
-			break
-		end
+		if #other_cands >= 150 then break end
 	end
 
 	if #pin_cands > 0 then
